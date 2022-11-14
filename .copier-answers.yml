@@ -1,0 +1,15 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: v0.1.1-637-gece6fbd
+_src_path: git@github.com:MeteoSwiss-APN/mch-python-blueprint.git
+email: daniel.regenass@meteoswiss.ch
+full_name: Daniel Regenass
+github_username: regDaniel
+module_name: richards_standalone
+project_github: regDaniel/richards-standalone
+project_name: Richards Standalone
+project_short_description: Standalone solver for Richards' equation.
+project_slug: richards-standalone
+python_version: '3.8'
+version: 0.1.0
+year: '2022'
+
