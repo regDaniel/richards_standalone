@@ -22,7 +22,7 @@ def calc_k_decharme(z_array, k_sat, f, z_root):
     return k0
 
 
-def hydraulics_rjitema(w_vol, dz, k0, k, d, hydraulic_params):
+def hydraulics_rjitema(w_vol, k0, k, d, hydraulic_params):
 
     d0 = hydraulic_params["d0"]
     k1 = hydraulic_params["k1"]
@@ -57,7 +57,7 @@ def hydraulics_rjitema(w_vol, dz, k0, k, d, hydraulic_params):
     return k, d
 
 
-def hydraulics_mvg(w_vol, dz, k0, k, d, hydraulic_params_mvg):
+def hydraulics_mvg(w_vol, k0, k, d, hydraulic_params_mvg):
 
     povo = hydraulic_params_mvg["pore_volume"]
     adp = hydraulic_params_mvg["air_dry_pt"]
@@ -142,6 +142,8 @@ def flux_fg_transformed(k, d, dflux_fg, w_vol, dzeta):
     return dflux_fg, kflux_fg
 
 
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-arguments
 def est_qground_fg(qground, w_vol, dz, z, k0_m, runoff_params, hydraulic_params):
 
     nz = len(w_vol)
@@ -178,18 +180,17 @@ def est_qground_fg(qground, w_vol, dz, z, k0_m, runoff_params, hydraulic_params)
     return qground, wt_depth
 
 
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-arguments
 def flux_corr(
     k_flux,
-    d_flux,
     d,
     infil,
     qground,
     w_vol,
     dz,
-    dz_h,
     time_params,
     hydraulic_params,
-    runoff_params,
 ):
 
     pore_volume = hydraulic_params["pore_volume"]
@@ -221,6 +222,8 @@ def flux_corr(
     return k_flux, d, qground, qsurf
 
 
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-arguments
 def flx_corr_full(
     k_flux,
     d_flux,
@@ -229,7 +232,6 @@ def flx_corr_full(
     qground,
     w_vol,
     dz,
-    dz_h,
     time_params,
     hydraulic_params,
     runoff_params,
@@ -271,9 +273,10 @@ def flx_corr_full(
     return k_flux, d, qground, qsurf
 
 
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-arguments
 def flux_corr_transformed(
     k_flux,
-    d_flux,
     d,
     infil,
     qground_tr,
