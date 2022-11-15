@@ -5,18 +5,19 @@ import numpy as np
 import xarray as xr
 
 # Local
+from .fluxes import hydraulics_mvg
+from .fluxes import hydraulics_rjitema
+from .grid import calc_jacobian
+from .grid import setup_grid
 from .parameter import grid_params
 from .parameter import hydraulic_params
 from .parameter import hydraulic_params_mvg
 from .parameter import options
 
 
-def plot_grid(grid_params):
+def plot_grid():
 
-    # Third-party
-    import grid as gd
-
-    z, z_m, dz, dz_h = gd.setup_grid(grid_params)
+    z, z_m, _, _ = setup_grid(grid_params)
 
     plt.hlines(z, xmin=0.0, xmax=1.0, linestyle="--")
     plt.hlines(z_m, xmin=0.0, xmax=1.0)
@@ -25,9 +26,8 @@ def plot_grid(grid_params):
         plt.text(0.1, layer, str(layer) + " m", va="top")
 
     plt.title(
-        r"Grid with $\Delta z_1 = {}$ m, $b = {}$ and $nz = {}$".format(
-            grid_params["z1"], grid_params["b"], grid_params["nz"]
-        )
+        f"Grid with $\\Delta z_1 = {grid_params['z1']}$ m, $b = {grid_params['b']}$"
+        f"and $nz = {grid_params['nz']}$"
     )
 
     plt.ylabel(r"$z$ [m]")
@@ -39,13 +39,10 @@ def plot_grid(grid_params):
 
 def plot_jacobian():
 
-    # Third-party
-    import grid as gd
+    z, z_m, _, _ = setup_grid(grid_params)
 
-    z, z_m = gd.setup_grid(grid_params)
-
-    metric_zmid = gd.calc_jacobian(z_m, grid_params)
-    metric_zhalf = gd.calc_jacobian(z, grid_params)
+    metric_zmid = calc_jacobian(z_m, grid_params)
+    metric_zhalf = calc_jacobian(z, grid_params)
     plt.plot(
         z_m,
         metric_zmid,
@@ -68,11 +65,8 @@ def plot_jacobian():
     plt.close()
 
 
-def plot_conductivities(plant_params, hydraulic_params, hydraulic_params_mvg):
-
-    # Local
-    from .fluxes import hydraulics_mvg
-    from .fluxes import hydraulics_rjitema
+# pylint: disable=too-many-locals
+def plot_conductivities():
 
     theta_max = hydraulic_params["pore_volume"]
     theta = np.linspace(0.0, theta_max, 10000)
@@ -100,12 +94,8 @@ def plot_conductivities(plant_params, hydraulic_params, hydraulic_params_mvg):
     k0_rij[:] = hydraulic_params["k0"]
     k0_mvg[:] = hydraulic_params_mvg["k0"]
 
-    k_rij, d_rij = hydraulics_rjitema(
-        theta, 1.0, k0_rij, k_rij, d_rij, hydraulic_params
-    )
-    k_mvg, d_mvg = hydraulics_mvg(
-        theta_m, 1.0, k0_mvg, k_mvg, d_mvg, hydraulic_params_mvg
-    )
+    k_rij, d_rij = hydraulics_rjitema(theta, k0_rij, k_rij, d_rij, hydraulic_params)
+    k_mvg, d_mvg = hydraulics_mvg(theta_m, k0_mvg, k_mvg, d_mvg, hydraulic_params_mvg)
 
     # because the functions implement bdries, we have to reset them for a proper
     # plot, the resulting inaccuracy is not visible on the plot.
