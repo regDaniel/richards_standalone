@@ -51,8 +51,6 @@ def hydraulics_rjitema(w_vol, k0, k, d, hydraulic_params):
     k[0] = k0[0]  # boundary condition
     d[-1] = FloatWP(0.0)
     k[-1] = FloatWP(0.0)
-    # free drainage
-    # k[-1] = k0[-1] * np.exp(k1 * (povo - w_vol[nz-1])/(povo - adp))
 
     return k, d
 
