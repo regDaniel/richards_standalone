@@ -1,6 +1,8 @@
 # Third-party
 import numpy as np
-from parameter import precision_params
+
+# Local
+from .parameter import precision_params
 
 # set precision globally
 float_wp = precision_params["working_precision"]

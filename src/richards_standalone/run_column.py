@@ -1,36 +1,38 @@
 # Third-party
 import numpy as np
-from fluxes import calc_k_decharme
-from fluxes import est_flux_fg
-from fluxes import est_qground_fg
-from fluxes import flux_corr
-from fluxes import flux_corr_transformed
-from fluxes import flux_fg_transformed
-from fluxes import hydraulics_mvg
-from fluxes import hydraulics_rjitema
-from grid import calc_dzeta
-from grid import calc_jacobian
-from grid import setup_grid
-from grid import transform_back
-from grid import transform_scalar
-from output import init_output
-from output import save_timelevel
-from parameter import hydraulic_params_mvg
-from parameter import options
-from parameter import plant_params
-from parameter import precision_params
-from parameter import time_params
-from parameter import update_parameter
-from plots import plot_saturation
-from plots import plot_var_1d
-from plots import plot_var_fluxgrid
-from plots import plot_var_massgrid
-from plots import prepare_netcdf
-from solver import update_implicit
-from solver import update_implicit_tr
 
 # First-party
 from richards_standalone.initialize import initial_condition
+
+# Local
+from .fluxes import calc_k_decharme
+from .fluxes import est_flux_fg
+from .fluxes import est_qground_fg
+from .fluxes import flux_corr
+from .fluxes import flux_corr_transformed
+from .fluxes import flux_fg_transformed
+from .fluxes import hydraulics_mvg
+from .fluxes import hydraulics_rjitema
+from .grid import calc_dzeta
+from .grid import calc_jacobian
+from .grid import setup_grid
+from .grid import transform_back
+from .grid import transform_scalar
+from .output import init_output
+from .output import save_timelevel
+from .parameter import hydraulic_params_mvg
+from .parameter import options
+from .parameter import plant_params
+from .parameter import precision_params
+from .parameter import time_params
+from .parameter import update_parameter
+from .plots import plot_saturation
+from .plots import plot_var_1d
+from .plots import plot_var_fluxgrid
+from .plots import plot_var_massgrid
+from .plots import prepare_netcdf
+from .solver import update_implicit
+from .solver import update_implicit_tr
 
 # set precision globally
 float_wp = precision_params["working_precision"]

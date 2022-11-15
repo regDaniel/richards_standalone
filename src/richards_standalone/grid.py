@@ -3,8 +3,10 @@ import warnings as wa
 
 # Third-party
 import numpy as np
+
+# Local
 # set precision globally
-from parameter import precision_params
+from .parameter import precision_params
 
 # from parameter import z1, b, nz
 

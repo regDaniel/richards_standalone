@@ -1,7 +1,9 @@
 # Third-party
 import numpy as np
-from grid import transform_scalar
-from parameter import precision_params
+
+# Local
+from .grid import transform_scalar
+from .parameter import precision_params
 
 # set precision globally
 float_wp = precision_params["working_precision"]

@@ -1,8 +1,10 @@
 # Third-party
 import numpy as np
-# set precision globally
-from parameter import precision_params
 from scipy.linalg import solve_banded
+
+# Local
+# set precision globally
+from .parameter import precision_params
 
 float_wp = precision_params["working_precision"]
 

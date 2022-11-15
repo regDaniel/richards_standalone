@@ -1,8 +1,13 @@
 # Third-party
 import matplotlib.pyplot as plt
 import numpy as np
-import parameter as p
 import xarray as xr
+
+# Local
+from .parameter import grid_params
+from .parameter import hydraulic_params
+from .parameter import hydraulic_params_mvg
+from .parameter import options
 
 
 def plot_grid(grid_params):
@@ -36,10 +41,10 @@ def plot_jacobian():
     # Third-party
     import grid as gd
 
-    z, z_m = gd.setup_grid(p.grid_params)
+    z, z_m = gd.setup_grid(grid_params)
 
-    metric_zmid = gd.calc_jacobian(z_m, p.grid_params)
-    metric_zhalf = gd.calc_jacobian(z, p.grid_params)
+    metric_zmid = gd.calc_jacobian(z_m, grid_params)
+    metric_zhalf = gd.calc_jacobian(z, grid_params)
     plt.plot(
         z_m,
         metric_zmid,
@@ -64,9 +69,9 @@ def plot_jacobian():
 
 def plot_conductivities(plant_params, hydraulic_params, hydraulic_params_mvg):
 
-    # Third-party
-    from fluxes import hydraulics_mvg
-    from fluxes import hydraulics_rjitema
+    # Local
+    from .fluxes import hydraulics_mvg
+    from .fluxes import hydraulics_rjitema
 
     theta_max = hydraulic_params["pore_volume"]
     theta = np.linspace(0.0, theta_max, 10000)
@@ -192,12 +197,10 @@ def plot_var_massgrid(output, out_ds, varname):
 
 
 def plot_saturation(output, out_ds):
-    if p.options["hydparam"] == "rjitema":
-        output.update({"sat": (output["w_vol"] / p.hydraulic_params["pore_volume"])})
-    elif p.options["hydparam"] == "mvg":
-        output.update(
-            {"sat": (output["w_vol"] / p.hydraulic_params_mvg["pore_volume"])}
-        )
+    if options["hydparam"] == "rjitema":
+        output.update({"sat": (output["w_vol"] / hydraulic_params["pore_volume"])})
+    elif options["hydparam"] == "mvg":
+        output.update({"sat": (output["w_vol"] / hydraulic_params_mvg["pore_volume"])})
     plot_var_massgrid(output, out_ds, "sat")
 
     return out_ds

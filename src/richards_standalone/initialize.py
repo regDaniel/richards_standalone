@@ -1,17 +1,24 @@
 # Third-party
 import numpy as np
-import parameter as p
-# set precision globally
-from parameter import precision_params
+
+# Local
+from .parameter import grid_params
+from .parameter import hydraulic_params
+from .parameter import hydraulic_params_mvg
+from .parameter import options
+from .parameter import precision_params
 
 float_wp = precision_params["working_precision"]
 
 
 def initial_condition(nsat_layers=0, sat_init=float_wp(0.8), smooth_init_profile=False):
 
-    nz = p.grid_params["nz"]
+    nz = grid_params["nz"]
     nz1 = nz + 1
-    pore_volume = p.hydraulic_params["pore_volume"]
+    if options["hydparam"] == "rjitema":
+        pore_volume = hydraulic_params["pore_volume"]
+    elif options["hydparam"] == "mvg":
+        pore_volume = hydraulic_params_mvg["pore_volume"]
 
     # initial moisture profile
     w_vol = np.zeros(nz, dtype=float_wp)

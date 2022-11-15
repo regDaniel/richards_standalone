@@ -69,25 +69,22 @@ options = {"hydparam": "rjitema", "discretization": "transformed"}
 
 def update_parameter(update_dict):
 
-    for u_key in update_dict.keys():
-        if u_key in time_params.keys():
+    for u_key, _ in update_dict:
+        if u_key in time_params:
             time_params[u_key] = update_dict[u_key]
-        elif u_key in grid_params.keys():
+        elif u_key in grid_params:
             grid_params[u_key] = update_dict[u_key]
-        elif u_key in hydraulic_params.keys():
+        elif u_key in hydraulic_params:
             hydraulic_params[u_key] = update_dict[u_key]
-        elif u_key in plant_params.keys():
+        elif u_key in plant_params:
             plant_params[u_key] = update_dict[u_key]
-        elif u_key in runoff_params.keys():
+        elif u_key in runoff_params:
             runoff_params[u_key] = update_dict[u_key]
-        elif u_key in options.keys():
+        elif u_key in options:
             options[u_key] = update_dict[u_key]
         else:
             raise RuntimeError(
-                'Parameter key "{}" could not be found, please\
-            check spelling'.format(
-                    u_key
-                )
+                f"Parameter key '{u_key}' could not be found." "Please check spelling"
             )
 
     return time_params, grid_params, hydraulic_params, runoff_params
