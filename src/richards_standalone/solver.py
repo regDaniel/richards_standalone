@@ -10,6 +10,7 @@ from .parameter import precision_params
 FloatWP = precision_params["working_precision"]
 
 
+# pylint: disable=too-many-arguments
 def update_euler(k, d, qground, w_vol, dz, dz_h, dt):
 
     nz = len(w_vol)
@@ -45,6 +46,8 @@ def update_euler(k, d, qground, w_vol, dz, dz_h, dt):
     return w_vol_upd
 
 
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-locals
 def update_implicit(dt, dz, dz_h, d, k, qground, w_vol, w_vol_new):
 
     # matrix dimensions
@@ -87,6 +90,8 @@ def update_implicit(dt, dz, dz_h, d, k, qground, w_vol, w_vol_new):
     return w_vol_new, k_tend, diff_tend
 
 
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-locals
 def update_implicit_tr(dt, dzeta, j_h, j_mid, d, k, w_vol, qground_tr, w_vol_new):
 
     # matrix dimensions
