@@ -1,3 +1,4 @@
+"""Numerical solvers."""
 # Third-party
 import numpy as np
 from scipy.linalg import solve_banded
@@ -6,7 +7,7 @@ from scipy.linalg import solve_banded
 # set precision globally
 from .parameter import precision_params
 
-float_wp = precision_params["working_precision"]
+FloatWP = precision_params["working_precision"]
 
 
 def update_euler(k, d, qground, w_vol, dz, dz_h, dt):
@@ -16,7 +17,7 @@ def update_euler(k, d, qground, w_vol, dz, dz_h, dt):
     jp1 = slice(2, nz)
     jm1 = slice(0, nz - 2)
 
-    flux_sum = np.zeros(nz, dtype=float_wp)
+    flux_sum = np.zeros(nz, dtype=FloatWP)
 
     flux_sum[j] = (
         (
@@ -55,24 +56,24 @@ def update_implicit(dt, dz, dz_h, d, k, qground, w_vol, w_vol_new):
     jp1 = slice(1, nz + 1)
 
     # matrix coefficients
-    a = np.zeros(nz, dtype=float_wp)
-    b = np.zeros(nz, dtype=float_wp)
-    c = np.zeros(nz, dtype=float_wp)
+    a = np.zeros(nz, dtype=FloatWP)
+    b = np.zeros(nz, dtype=FloatWP)
+    c = np.zeros(nz, dtype=FloatWP)
 
     b[j] = -dt / dz[j] * d[jp1] / dz_h[jp1]
     c[j] = -dt / dz[j] * d[j] / dz_h[j]
     a[j] = (dt / dz[j]) * (d[jp1] / dz_h[jp1] + d[j] / dz_h[j])
     # RHS
-    y = np.zeros(nz, float_wp)
+    y = np.zeros(nz, FloatWP)
     y[j] = w_vol[j] - dt / dz[j] * (k[jp1] - k[j]) - dt * qground[j]
 
     # diagonal and off-diag vectors
-    diag_main = float_wp(1.0) + a[j]
+    diag_main = FloatWP(1.0) + a[j]
     diag_lower = c[(1):(nz)]
     diag_upper = b[: (nz - 1)]
 
     # set up array with matrix diagonals
-    lhs_banded = np.zeros((3, len_diag), dtype=float_wp)
+    lhs_banded = np.zeros((3, len_diag), dtype=FloatWP)
     lhs_banded[0, 1:] = diag_upper
     lhs_banded[1, :] = diag_main
     lhs_banded[2, :-1] = diag_lower
@@ -97,24 +98,24 @@ def update_implicit_tr(dt, dzeta, j_h, j_mid, d, k, w_vol, qground_tr, w_vol_new
     jp1 = slice(1, nz + 1)
 
     # matrix coefficients
-    a = np.zeros(nz, dtype=float_wp)
-    b = np.zeros(nz, dtype=float_wp)
-    c = np.zeros(nz, dtype=float_wp)
+    a = np.zeros(nz, dtype=FloatWP)
+    b = np.zeros(nz, dtype=FloatWP)
+    c = np.zeros(nz, dtype=FloatWP)
 
     b[j] = -dt / dzeta * d[jp1] / dzeta * j_h[jp1]
     c[j] = -dt / dzeta * d[j] / dzeta * j_h[j]
     a[j] = (dt / dzeta) * (d[jp1] / dzeta * j_h[jp1] + d[j] / dzeta * j_h[j])
     # RHS
-    y = np.zeros(nz, float_wp)
+    y = np.zeros(nz, FloatWP)
     y[j] = w_vol[j] / j_mid[j] - dt / dzeta * (k[jp1] - k[j]) - dt * qground_tr[j]
 
     # diagonal and off-diag vectors
-    diag_main = float_wp(1.0) / j_mid[j] + a[j]
+    diag_main = FloatWP(1.0) / j_mid[j] + a[j]
     diag_lower = c[(1):(nz)]
     diag_upper = b[: (nz - 1)]
 
     # set up array with matrix diagonals
-    lhs_banded = np.zeros((3, len_diag), dtype=float_wp)
+    lhs_banded = np.zeros((3, len_diag), dtype=FloatWP)
     lhs_banded[0, 1:] = diag_upper
     lhs_banded[1, :] = diag_main
     lhs_banded[2, :-1] = diag_lower

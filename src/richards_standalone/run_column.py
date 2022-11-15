@@ -1,3 +1,8 @@
+"""Run the single column model.
+
+Currently only 1D available
+
+"""
 # Third-party
 import numpy as np
 
@@ -35,7 +40,7 @@ from .solver import update_implicit
 from .solver import update_implicit_tr
 
 # set precision globally
-float_wp = precision_params["working_precision"]
+FloatWP = precision_params["working_precision"]
 
 
 def run_nolateral(infil, update_dict={}):
@@ -53,11 +58,11 @@ def run_nolateral(infil, update_dict={}):
 
     # initial profile, arrays
     w_vol, w_vol_new, k, d, d_flux, qground, qsurf, wt_depth = initial_condition(
-        nsat_layers=0, sat_init=float_wp(0.8)
+        nsat_layers=0, sat_init=FloatWP(0.8)
     )
-    k_flux = np.zeros(len(z), dtype=float_wp)
-    diff_tend = np.zeros(len(w_vol), dtype=float_wp)
-    k_tend = np.zeros(len(w_vol), dtype=float_wp)
+    k_flux = np.zeros(len(z), dtype=FloatWP)
+    diff_tend = np.zeros(len(w_vol), dtype=FloatWP)
+    k_tend = np.zeros(len(w_vol), dtype=FloatWP)
 
     # retrieve some parameter
     if options["hydparam"] == "rjitema":
@@ -222,7 +227,7 @@ def run_nolateral(infil, update_dict={}):
     # Save Grid Information
     output.update({"z": z})
     output.update({"z_mid": z_mid})
-    t_ax = np.linspace(float_wp(0.0), t_max, nout)
+    t_ax = np.linspace(FloatWP(0.0), t_max, nout)
     output.update({"t_ax": t_ax})
 
     return output
@@ -231,8 +236,8 @@ def run_nolateral(infil, update_dict={}):
 if __name__ == "__main__":
 
     nt = int(time_params["t_max"] / time_params["dt"])
-    infil = np.zeros(nt, dtype=float_wp)
-    infil[0 : int(nt / 4)] = float_wp(10.0e-6)
+    infil = np.zeros(nt, dtype=FloatWP)
+    infil[0 : int(nt / 4)] = FloatWP(10.0e-6)
 
     output = run_nolateral(infil)
     out_ds = prepare_netcdf(output)

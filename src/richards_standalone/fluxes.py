@@ -1,3 +1,9 @@
+"""Functions to calculate the fluxes and flux corrections.
+
+Inside the soil matrix and for the interfaces atmosphere - soil and
+soil water - discharge.
+
+"""
 # Third-party
 import numpy as np
 
@@ -6,7 +12,7 @@ from .grid import transform_scalar
 from .parameter import precision_params
 
 # set precision globally
-float_wp = precision_params["working_precision"]
+FloatWP = precision_params["working_precision"]
 
 
 def calc_k_decharme(z_array, k_sat, f, z_root):
@@ -34,17 +40,17 @@ def hydraulics_rjitema(w_vol, dz, k0, k, d, hydraulic_params):
             "k0 must either be an array of length nz+1 \
                             or a scalar"
         )
-    w_vol_interpol = np.zeros(nz + 1, dtype=float_wp)
-    w_vol_interpol[j] = float_wp(0.5) * (w_vol[j] + w_vol[jm1])
+    w_vol_interpol = np.zeros(nz + 1, dtype=FloatWP)
+    w_vol_interpol[j] = FloatWP(0.5) * (w_vol[j] + w_vol[jm1])
     w_vol_interpol[0] = w_vol[0]
 
     j = slice(0, nz)
     k[j] = k0[j] * np.exp(k1 * (povo - w_vol_interpol[j]) / (povo - adp))
     d[j] = d0 * np.exp(d1 * (povo - w_vol_interpol[j]) / (povo - adp))
-    d[0] = float_wp(0.0)  # boundary condition
+    d[0] = FloatWP(0.0)  # boundary condition
     k[0] = k0[0]  # boundary condition
-    d[-1] = float_wp(0.0)
-    k[-1] = float_wp(0.0)
+    d[-1] = FloatWP(0.0)
+    k[-1] = FloatWP(0.0)
     # free drainage
     # k[-1] = k0[-1] * np.exp(k1 * (povo - w_vol[nz-1])/(povo - adp))
 
@@ -67,8 +73,8 @@ def hydraulics_mvg(w_vol, dz, k0, k, d, hydraulic_params_mvg):
             "k0 must either be an array of length nz+1 \
                             or a scalar"
         )
-    w_vol_interpol = np.zeros(nz + 1, dtype=float_wp)
-    w_vol_interpol[j] = float_wp(0.5) * (w_vol[j] + w_vol[jm1])
+    w_vol_interpol = np.zeros(nz + 1, dtype=FloatWP)
+    w_vol_interpol[j] = FloatWP(0.5) * (w_vol[j] + w_vol[jm1])
     w_vol_interpol[0] = w_vol[0]
 
     rh = (w_vol_interpol - adp) / (povo - adp)  # relative humidity
@@ -76,29 +82,29 @@ def hydraulics_mvg(w_vol, dz, k0, k, d, hydraulic_params_mvg):
         k0[j]
         * np.sqrt(rh[j])
         * (
-            float_wp(1.0)
-            - np.abs((1.0) - (np.abs(rh[j])) ** (float_wp(1.0) / m_mvg)) ** m_mvg
+            FloatWP(1.0)
+            - np.abs((1.0) - (np.abs(rh[j])) ** (FloatWP(1.0) / m_mvg)) ** m_mvg
         )
-        ** float_wp(2.0)
+        ** FloatWP(2.0)
     )
     d[j] = (
-        (float_wp(1.0) - m_mvg)
+        (FloatWP(1.0) - m_mvg)
         * k[j]
         / (m_mvg * alp_mvg)
-        * float_wp(1.0)
+        * FloatWP(1.0)
         / (w_vol_interpol[j] - adp)
-        * (np.abs(rh[j])) ** (-float_wp(1.0) / m_mvg)
-        * (np.abs((np.abs(rh[j])) ** (-float_wp(1.0) / m_mvg) - float_wp(1.0)))
+        * (np.abs(rh[j])) ** (-FloatWP(1.0) / m_mvg)
+        * (np.abs((np.abs(rh[j])) ** (-FloatWP(1.0) / m_mvg) - FloatWP(1.0)))
         ** (-m_mvg)
     )
 
     # limit diffusion, in case of NaN it will drop to max value.
-    diffmax = float_wp(10.0 * 5.31e-6)
+    diffmax = FloatWP(10.0 * 5.31e-6)
     d = np.nan_to_num(d, diffmax)
     d = np.minimum(d, diffmax)
 
     # boundary condition
-    d[0] = float_wp(0.0)
+    d[0] = FloatWP(0.0)
     k[0] = k0[0]
 
     return k, d
@@ -111,11 +117,11 @@ def est_flux_fg(k, d, dflux_fg, w_vol, dz_h):
     j = slice(0, nz - 1)
     jp1 = slice(1, nz)
 
-    dflux_fg[jp1] = -d[jp1] * float_wp(1.0) / dz_h[jp1] * (w_vol[jp1] - w_vol[j])
+    dflux_fg[jp1] = -d[jp1] * FloatWP(1.0) / dz_h[jp1] * (w_vol[jp1] - w_vol[j])
     kflux_fg = k
 
-    dflux_fg[-1] = float_wp(0.0)
-    kflux_fg[-1] = float_wp(0.0)  # boundary condition
+    dflux_fg[-1] = FloatWP(0.0)
+    kflux_fg[-1] = FloatWP(0.0)  # boundary condition
 
     return dflux_fg, kflux_fg
 
@@ -127,11 +133,11 @@ def flux_fg_transformed(k, d, dflux_fg, w_vol, dzeta):
     j = slice(0, nz - 1)
     jp1 = slice(1, nz)
 
-    dflux_fg[jp1] = -d[jp1] * float_wp(1.0) / dzeta * (w_vol[jp1] - w_vol[j])
+    dflux_fg[jp1] = -d[jp1] * FloatWP(1.0) / dzeta * (w_vol[jp1] - w_vol[j])
     kflux_fg = k
 
-    dflux_fg[-1] = float_wp(0.0)
-    kflux_fg[-1] = float_wp(0.0)  # boundary condition
+    dflux_fg[-1] = FloatWP(0.0)
+    kflux_fg[-1] = FloatWP(0.0)  # boundary condition
 
     return dflux_fg, kflux_fg
 
@@ -139,7 +145,7 @@ def flux_fg_transformed(k, d, dflux_fg, w_vol, dzeta):
 def est_qground_fg(qground, w_vol, dz, z, k0_m, runoff_params, hydraulic_params):
 
     nz = len(w_vol)
-    qground[:] = float_wp(0.0)  # reset
+    qground[:] = FloatWP(0.0)  # reset
 
     pore_volume = hydraulic_params["pore_volume"]
     s_oro = runoff_params["s_oro"]
@@ -156,13 +162,13 @@ def est_qground_fg(qground, w_vol, dz, z, k0_m, runoff_params, hydraulic_params)
 
     if j_sat > 0:
         d1 = min(
-            float_wp(1.0),
-            max(float_wp(0.0), (w_vol[j_unsat] - w_vol[j_unsat - 1]))
+            FloatWP(1.0),
+            max(FloatWP(0.0), (w_vol[j_unsat] - w_vol[j_unsat - 1]))
             / (pore_volume - w_vol[j_unsat - 1] + eps),
         )
         wt_depth = z[j_sat] - d1 * dz[j_unsat]
     else:
-        wt_depth = float_wp(0.0)
+        wt_depth = FloatWP(0.0)
 
     # discharge from saturated layers
     qground[j_sat:nz] = s_oro * lg1 * k0_m[j_sat:nz]
@@ -194,9 +200,9 @@ def flux_corr(
     # overdepletion
     for j in range(nz - 1, -1, -1):
         alpha_out = max(
-            float_wp(0.0),
+            FloatWP(0.0),
             min(
-                float_wp(1.0),
+                FloatWP(1.0),
                 (w_vol[j] - air_dry_pt) / (dt * (k_flux[j + 1] / dz[j] + qground[j])),
             ),
         )
@@ -206,10 +212,10 @@ def flux_corr(
     # overfill
     for j in range(nz - 1, -1, -1):
         k_limit = k_flux[j + 1] + dz[j] * ((pore_volume - w_vol[j]) / dt + qground[j])
-        k_flux[j] = max(float_wp(0.0), min(k_flux[j], k_limit))
+        k_flux[j] = max(FloatWP(0.0), min(k_flux[j], k_limit))
 
     # surface runoff
-    qsurf = max(float_wp(0.0), infil - k_flux[0])
+    qsurf = max(FloatWP(0.0), infil - k_flux[0])
     k_flux[0] = min(k_flux[0], infil)
 
     return k_flux, d, qground, qsurf
@@ -239,13 +245,13 @@ def flx_corr_full(
     for j in range(nz - 1, -1, -1):
         flux_out = (
             k_flux[j + 1]
-            + max(float_wp(0.0), d_flux[j + 1])
-            - min(float_wp(0.0), d_flux[j])
+            + max(FloatWP(0.0), d_flux[j + 1])
+            - min(FloatWP(0.0), d_flux[j])
         )
         alpha_out = max(
-            float_wp(0.0),
+            FloatWP(0.0),
             min(
-                float_wp(1.0),
+                FloatWP(1.0),
                 (w_vol[j] - air_dry_pt) / (dt * (flux_out / dz[j] + qground[j]) + eps),
             ),
         )
@@ -256,10 +262,10 @@ def flx_corr_full(
     for j in range(nz - 1, -1, -1):
         flux_out2 = k_flux[j + 1] + d_flux[j + 1] - d_flux[j]
         k_limit = flux_out2 + dz[j] * ((pore_volume - w_vol[j]) / dt + qground[j])
-        k_flux[j] = max(float_wp(0.0), min(k_flux[j], k_limit + eps))
+        k_flux[j] = max(FloatWP(0.0), min(k_flux[j], k_limit + eps))
 
     # surface runoff
-    qsurf = max(float_wp(0.0), infil - k_flux[0])
+    qsurf = max(FloatWP(0.0), infil - k_flux[0])
     k_flux[0] = min(k_flux[0], infil)
 
     return k_flux, d, qground, qsurf
@@ -287,9 +293,9 @@ def flux_corr_transformed(
     # overdepletion
     for j in range(nz - 1, -1, -1):
         alpha_out = max(
-            float_wp(0.0),
+            FloatWP(0.0),
             min(
-                float_wp(1.0),
+                FloatWP(1.0),
                 (w_vol_tr[j] - air_dry_pt_tr[j])
                 / (dt * (k_flux[j + 1] / dzeta + qground_tr[j] + runoff_params["eps"])),
             ),
@@ -302,23 +308,21 @@ def flux_corr_transformed(
         k_limit = k_flux[j + 1] + dzeta * (
             (pore_volume_tr[j] - w_vol_tr[j]) / dt + qground_tr[j]
         )
-        k_flux[j] = max(float_wp(0.0), min(k_flux[j], k_limit))
+        k_flux[j] = max(FloatWP(0.0), min(k_flux[j], k_limit))
 
     # surface runoff
-    qsurf = max(float_wp(0.0), infil - k_flux[0])
+    qsurf = max(FloatWP(0.0), infil - k_flux[0])
     k_flux[0] = min(k_flux[0], infil)
 
     return k_flux, d, qground_tr, qsurf
 
 
 def overflow_clip(w_vol, qground, hydraulic_params, time_params):
-
-    """Simple Clipping routine to set water content to a max of pore volume."""
-
+    """Clip water content to a max of pore volume."""
     pore_volume = hydraulic_params["pore_volume"]
 
     qground = (
-        qground + np.maximum(float_wp(0.0), w_vol - pore_volume) / time_params["dt"]
+        qground + np.maximum(FloatWP(0.0), w_vol - pore_volume) / time_params["dt"]
     )
     w_vol = np.minimum(w_vol, pore_volume)
 
@@ -326,7 +330,7 @@ def overflow_clip(w_vol, qground, hydraulic_params, time_params):
 
 
 def underflow_clip(w_vol, hydraulic_params):
-
+    """Clip water content to a min of air dry pt."""
     air_dry_pt = hydraulic_params["air_dry_pt"]
 
     w_vol = np.maximum(w_vol, air_dry_pt)

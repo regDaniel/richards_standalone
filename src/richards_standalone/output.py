@@ -1,3 +1,4 @@
+"""Write output."""
 # Third-party
 import numpy as np
 
@@ -5,14 +6,14 @@ import numpy as np
 from .parameter import precision_params
 
 # set precision globally
-float_wp = precision_params["working_precision"]
+FloatWP = precision_params["working_precision"]
 
 
 def init_output(outvars_dict, nout, nz):
 
     # create another dict with arrays for output.
     output = {
-        entry: np.zeros((nout, len(outvars_dict[entry])), dtype=float_wp)
+        entry: np.zeros((nout, len(outvars_dict[entry])), dtype=FloatWP)
         for entry in outvars_dict.keys()
     }
 

@@ -1,3 +1,4 @@
+"""Functions to visualize grid, parameter and output."""
 # Third-party
 import matplotlib.pyplot as plt
 import numpy as np
